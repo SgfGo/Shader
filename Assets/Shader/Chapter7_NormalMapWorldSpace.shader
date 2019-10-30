@@ -1,4 +1,6 @@
-﻿Shader "SGF/NormalMapTangentSpace"
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+Shader "SGF/NormalMapTangentSpace"
 {
     Properties
     {
@@ -62,10 +64,10 @@
                 o.uv.xy = v.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw;
                 o.uv.zw = v.texcoord.xy * _BumpMap_ST.xy + _BumpMap_ST.zw;
                 
-                float3 worldPos = mul(_Object2World,v.vertex).xyz;
+                float3 worldPos = mul(unity_ObjectToWorld,v.vertex).xyz;
                 float3 worldNormal = UnityObjectToWorldNormal(v.normal);
-                float3 worldTargent = UnityObjectToWorldDir(v.tangent.xyz);
-                fixed3 worldBinormal = cross(worldNormal,worldTargent) * v.tangent.w;
+                float3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
+                fixed3 worldBinormal = cross(worldNormal,worldTangent) * v.tangent.w;
                 
                 // comput the matrix that transform directions from tangent space to world space
                 // put the world position in w component for optimization
@@ -82,7 +84,7 @@
                 
                 // comput the light and view dir in world space
                 fixed3 lightDir = normalize(UnityWorldSpaceLightDir(worldPos));
-                fixed3 viewDir = normalize(UnityWorldSpaceView(worldPos));
+                fixed3 viewDir = normalize(UnityWorldSpaceViewDir(worldPos));
                 
                 fixed3 bump = UnpackNormal(tex2D(_BumpMap,i.uv.zw));
                 bump.xy *= _BumpScale;
@@ -90,17 +92,19 @@
                 
                 bump = normalize(half3(dot(i.TtoW0.xyz,bump),dot(i.TtoW1.xyz,bump),dot(i.TtoW2.xyz,bump)));
                 
-                fixed3 albedo = tex2D(_MainTex,i.uv).rgb * _Color.rgb;
+                //fixed3 albedo = tex2D(_MainTex,i.uv).rgb * _Color.rgb;
                 
-                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;
+                //fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;
                 
-                fixed3 diffuse = _LightColor0.rgb * albedo * max(0,dot(bump,tangentLightDir));
+                //fixed3 diffuse = _LightColor0.rgb * albedo * max(0,dot(bump,tangentLightDir));
                 
-                fixed3 halfDir = normalize(tangentLightDir + tangentViewDir);
+                //fixed3 halfDir = normalize(tangentLightDir + tangentViewDir);
                 
-                fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(max(0,dot(bump,halfDir)),_Gloss);
+                //fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(max(0,dot(bump,halfDir)),_Gloss);
                 
-                return fixed4(ambient + diffuse + specular,1.0);
+                //return fixed4(ambient + diffuse + specular,1.0);
+                
+                return fixed4(1,1,1,1);
             }
             ENDCG
         }
